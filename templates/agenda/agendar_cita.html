@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Agendar cita{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+  .flatpickr-calendar{border-radius:12px;box-shadow:0 14px 40px rgba(2,6,23,.12);border:1px solid rgba(2,6,23,.06)}
+  .flatpickr-weekday{color:#64748b}
+  .flatpickr-day.today{border-color:#00a3a3}
+  .flatpickr-day.selected,.flatpickr-day.startRange,.flatpickr-day.endRange,.flatpickr-day.selected:hover{background:#00a3a3;border-color:#00a3a3;color:#fff}
+  .flatpickr-day.disabled,.flatpickr-day.notAllowed{color:#cbd5e1;cursor:not-allowed}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container mx-auto max-w-5xl py-10">
+  <h1 class="text-3xl font-bold mb-8">Agendar Cita</h1>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Especialidad -->
+      <div>
+        <label for="id_especialidad" class="block text-sm font-medium mb-2">Especialidad</label>
+        <select id="id_especialidad" name="especialidad" class="form-select w-full">
+          <option value="">— Seleccione especialidad —</option>
+          {% for e in especialidades %}
+            <option value="{{ e.id }}" {% if form.data.especialidad|default:form.initial.especialidad == e.id %}selected{% endif %}>
+              {{ e.nombre }}
+            </option>
+          {% endfor %}
+        </select>
+        {% if form.especialidad.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.especialidad.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Médico -->
+      <div>
+        <label for="id_medico" class="block text-sm font-medium mb-2">Médico</label>
+        <select id="id_medico" name="medico" class="form-select w-full">
+          <option value="">— Seleccione médico —</option>
+          {% for m in medicos %}
+            <option value="{{ m.id }}" {% if form.data.medico|default:form.initial.medico == m.id %}selected{% endif %}>
+              {{ m.nombre }}
+            </option>
+          {% endfor %}
+        </select>
+        {% if form.medico.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.medico.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Fecha (Flatpickr) -->
+      <div>
+        <label for="id_fecha" class="block text-sm font-medium mb-2">Fecha</label>
+        <input
+          id="id_fecha"
+          name="fecha"
+          type="text"
+          class="form-control w-full"
+          placeholder="Selecciona una fecha"
+          autocomplete="off"
+          value="{{ form.fecha.value|default:'' }}"
+        />
+        <p class="text-gray-500 text-xs mt-2">No hay atención sábados ni domingos.</p>
+        {% if form.fecha.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.fecha.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Hora -->
+      <div>
+        <label for="id_hora" class="block text-sm font-medium mb-2">Hora</label>
+        <select id="id_hora" name="hora" class="form-select w-full">
+          <option value="">— Seleccione hora —</option>
+        </select>
+        {% if form.hora.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.hora.errors.0 }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Motivo -->
+    <div class="mt-6">
+      <label for="{{ form.motivo.id_for_label }}" class="block text-sm font-medium mb-2">Motivo</label>
+      {{ form.motivo }}
+      {% if form.motivo.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.motivo.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div class="mt-8 flex items-center gap-4">
+      <button type="submit" class="btn btn-primary">Guardar cita</button>
+      <a href="{% url 'agenda:perfil' %}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+<script>
+(() => {
+  const $esp   = document.getElementById("id_especialidad");
+  const $med   = document.getElementById("id_medico");
+  const $fecha = document.getElementById("id_fecha");
+  const $hora  = document.getElementById("id_hora");
+
+  function resetMedicos(){ $med.innerHTML  = '<option value="">— Seleccione médico —</option>'; }
+  function resetHoras(){   $hora.innerHTML = '<option value="">— Seleccione hora —</option>'; }
+  function esFinSemana(iso){
+    if(!iso) return false;
+    const d = new Date(iso + "T00:00:00");
+    return d.getDay() === 0 || d.getDay() === 6;
+  }
+
+  $esp.addEventListener("change", () => {
+    resetMedicos(); resetHoras();
+    const esp = $esp.value;
+    if (!esp) return;
+    fetch("{% url 'agenda:ajax_medicos' %}?especialidad=" + esp)
+      .then(r => r.json())
+      .then(data => {
+        for (const it of data.items) {
+          const opt = document.createElement("option");
+          opt.value = it.id;
+          opt.textContent = it.nombre;
+          $med.appendChild(opt);
+        }
+      });
+  });
+
+  // Guard de concurrencia: evita duplicados en el dropdown de horas
+  let reqSeq = 0;
+
+  function cargarHoras(){
+    resetHoras();
+    const med = $med.value;
+    const f   = $fecha.value;
+    if (!med || !f) return;
+    if (esFinSemana(f)) { alert("No se atiende sábados ni domingos."); return; }
+
+    const mySeq = ++reqSeq;
+    fetch("{% url 'agenda:ajax_horas' %}?medico=" + med + "&fecha=" + f)
+      .then(r => r.json())
+      .then(data => {
+        if (mySeq !== reqSeq) return; // descarta respuestas viejas
+        for (const hh of data.items) {
+          const opt = document.createElement("option");
+          opt.value = hh;
+          opt.textContent = hh;
+          $hora.appendChild(opt);
+        }
+      });
+  }
+
+  $med.addEventListener("change", cargarHoras);
+
+  const fp = flatpickr($fecha, {
+    locale: flatpickr.l10ns.es,
+    disableMobile: true,
+    minDate: "today",
+    dateFormat: "Y-m-d",
+    altInput: true,
+    altFormat: "l d \\d\\e F, Y",
+    weekNumbers: true,
+    allowInput: false,
+    disable: [d => d.getDay() === 0 || d.getDay() === 6],
+    onChange: cargarHoras
+  });
+
+  if ($fecha.value && !fp.selectedDates.length) {
+    fp.setDate($fecha.value, true, "Y-m-d");
+  }
+  if ($med.value && $fecha.value && !esFinSemana($fecha.value)) {
+    cargarHoras();
+  }
+
+  // --- Bloqueo de doble envío del form ---
+  const form = document.querySelector('form[method="post"]');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      const btn = form.querySelector('button[type="submit"]');
+      if (btn && !btn.dataset.locked) {
+        btn.dataset.locked = "1";
+        btn.disabled = true;
+        btn.innerHTML = 'Guardando…';
+      } else {
+        e.preventDefault();
+      }
+    });
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,257 @@
+:root {
+    --brand: #00a3a3;
+    --brand-dark: #008080;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: rgba(2, 6, 23, .08);
+}
+
+html,
+body {
+    height: 100%
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+}
+
+.navbar {
+    box-shadow: 0 2px 12px rgba(2, 6, 23, .06)
+}
+
+.navbar-brand img {
+    height: 40px
+}
+
+.nav-link {
+    color: var(--ink)
+}
+
+.nav-link:hover {
+    color: var(--brand-dark)
+}
+
+.active-link {
+    color: var(--brand) !important;
+    font-weight: 600
+}
+
+.btn-brand {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 163, 163, .2);
+    transition: all .2s ease;
+}
+
+.btn-brand:hover {
+    background: var(--brand-dark);
+    border-color: var(--brand-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 163, 163, .3)
+}
+
+.btn,
+.form-control,
+.form-select {
+    border-radius: 10px
+}
+
+.form-label {
+    font-weight: 600
+}
+
+.form-control,
+.form-select {
+    border: 1px solid var(--border)
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 0.2rem rgba(0, 163, 163, .15)
+}
+
+.card-md {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(2, 6, 23, .06)
+}
+
+.table thead th {
+    font-weight: 600;
+    border-bottom: 2px solid var(--border)
+}
+
+.table tbody td {
+    vertical-align: middle
+}
+
+.table-hover tbody tr:hover {
+    background: #f1f5f9
+}
+
+.badge-soft {
+    background: rgba(0, 163, 163, .1);
+    color: var(--brand);
+    border: 1px solid rgba(0, 163, 163, .25)
+}
+
+.section {
+    padding: 1.25rem
+}
+
+.section-lg {
+    padding: 2rem
+}
+
+.hero {
+    padding-top: 3rem;
+    padding-bottom: 3rem
+}
+
+.hero h1 {
+    letter-spacing: -.02em
+}
+
+.hero p {
+    color: var(--muted)
+}
+
+@media (min-width:992px) {
+    .hero {
+        padding-top: 4rem;
+        padding-bottom: 4rem
+    }
+}
+
+footer {
+    background: #fff;
+    border-top: 1px solid var(--border)
+}
+
+footer a {
+    color: var(--muted)
+}
+
+footer a:hover {
+    color: var(--brand-dark)
+}
+
+/* Botones ghost (bordes más suaves y mejor hover) */
+.btn-ghost {
+    border-radius: 999px;
+    border: 1px solid rgba(2, 6, 23, .12);
+    color: #0f172a;
+    background: transparent;
+}
+
+.btn-ghost:hover {
+    background: #f1f5f9;
+    border-color: rgba(2, 6, 23, .2);
+}
+
+/* Cards más “enterprise” */
+.card {
+    border-radius: 16px;
+}
+
+/* Tipografía y subtítulos suaves */
+.lead {
+    color: #64748b;
+}
+
+/* Botón principal (verde MediDate) */
+.btn-primary {
+    background-color: #0f9488 !important;
+    /* verde turquesa */
+    border-color: #0f9488 !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover {
+    background-color: #0c7a6e !important;
+    /* un verde más oscuro al hover */
+    border-color: #0c7a6e !important;
+}
+
+/* Botón secundario (outline en verde) */
+.btn-outline {
+    background-color: transparent !important;
+    border: 1px solid #0f9488 !important;
+    color: #0f9488 !important;
+}
+
+.btn-outline:hover {
+    background-color: #0f9488 !important;
+    color: #fff !important;
+}
+
+/* ---------- Perfil editar: retoques UI ---------- */
+.page-title {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.card-md {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 8px 26px rgba(2, 6, 23, .06);
+}
+
+.input-md {
+    height: 46px;
+    border-radius: 10px;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: .35rem;
+}
+
+.btn-primary {
+    background-color: var(--brand) !important;
+    border-color: var(--brand) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--brand-dark) !important;
+    border-color: var(--brand-dark) !important;
+}
+
+.btn-outline {
+    border: 1px solid var(--border) !important;
+    color: var(--ink) !important;
+    background: #fff !important;
+}
+
+.btn-outline:hover {
+    border-color: var(--brand) !important;
+    color: var(--brand) !important;
+    background: rgba(0, 163, 163, .06) !important;
+}
+
+.form-control {
+    background: #fff;
+    /* inputs sobre tarjeta blanca */
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+.badge.badge-brand {
+    background: var(--brand) !important;
+    color: #fff !important;
+    border: 0;
+}

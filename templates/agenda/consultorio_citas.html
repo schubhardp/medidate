@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Consultorio – Citas{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <h1 class="h4 mb-0">Citas de pacientes</h1>
+</div>
+
+<div class="bg-white rounded-3 p-3 p-md-4 shadow-sm mb-4">
+  <form method="get" class="row g-3">
+    <div class="col-md-3">
+      <label class="form-label">Especialidad</label>
+      <select class="form-select" name="especialidad" id="f_especialidad">
+        <option value="">Todas</option>
+        {% for e in especialidades %}
+          <option value="{{ e.id }}" {% if f.especialidad|default:'' == e.id|stringformat:'s' %}selected{% endif %}>{{ e.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Médico</label>
+      <select class="form-select" name="medico" id="f_medico">
+        <option value="">Todos</option>
+        {% for m in medicos %}
+          <option value="{{ m.id }}" {% if f.medico|default:'' == m.id|stringformat:'s' %}selected{% endif %}>
+            {{ m.nombre }} ({{ m.especialidad.nombre }})
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Desde</label>
+      <input type="date" class="form-control" name="desde" value="{{ f.desde }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Hasta</label>
+      <input type="date" class="form-control" name="hasta" value="{{ f.hasta }}">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Estado</label>
+      <select class="form-select" name="estado">
+        {% for val, txt in ESTADOS %}
+          <option value="{{ val }}" {% if f.estado == val %}selected{% endif %}>{{ txt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Buscar paciente (nombre o email)</label>
+      <input type="search" class="form-control" name="q" placeholder="Ej: juan, ana@correo.com" value="{{ f.q }}">
+    </div>
+    <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+      <a class="btn btn-outline-secondary" href="{% url 'agenda:consultorio_citas' %}">Limpiar</a>
+      <button class="btn btn-brand text-white">Aplicar filtros</button>
+    </div>
+  </form>
+</div>
+
+<div class="bg-white rounded-3 p-3 p-md-4 shadow-sm">
+  {% if page_obj.paginator.count == 0 %}
+    <div class="text-center py-5">
+      <h5 class="mb-1">Sin resultados</h5>
+      <p class="text-muted mb-0">Ajusta los filtros para ver citas.</p>
+    </div>
+  {% else %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="min-width:120px">Fecha</th>
+            <th>Médico</th>
+            <th>Especialidad</th>
+            <th>Paciente</th>
+            <th>Motivo</th>
+            <th class="text-center" style="min-width:120px">Estado</th>
+            <th class="text-end" style="min-width:140px">Acciones</th>  {# NUEVO #}
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in page_obj %}
+          <tr>
+            <td>{{ c.fecha|date:"d/m/Y" }} {{ c.hora|time:"H:i" }}</td>
+            <td>{{ c.medico.nombre }}</td>
+            <td>{{ c.medico.especialidad.nombre }}</td>
+            <td>{{ c.paciente.user.get_full_name|default:c.paciente.user.email }}</td>
+            <td>{{ c.motivo|default:"—" }}</td>
+            <td class="text-center">
+              <span class="badge {{ c.estado_badge_class }}">{{ c.estado_ui|capfirst }}</span>
+            </td>
+            <td class="text-end">
+              {% if c.estado != 'cancelada' and c.estado_ui != 'atendida' %}
+                <form method="post"
+                      action="{% url 'agenda:consultorio_cita_cancelar' c.id %}"
+                      class="d-inline-block"
+                      onsubmit="return confirm('¿Cancelar la cita de {{ c.paciente.user.get_full_name|default:c.paciente.user.email }} el {{ c.fecha|date:"d/m/Y" }} a las {{ c.hora|time:"H:i" }}?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button class="btn btn-sm btn-outline-danger">Cancelar</button>
+                </form>
+              {% else %}
+                <span class="text-muted small">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="small text-muted">
+        Mostrando {{ page_obj.start_index }}–{{ page_obj.end_index }} de {{ page_obj.paginator.count }}
+      </div>
+      <nav>
+        <ul class="pagination mb-0">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode|cut:'page='|cut:page_obj.number|stringformat:'s' }}">«</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">«</span></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode|cut:'page='|cut:page_obj.number|stringformat:'s' }}">»</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">»</span></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Cargar médicos cuando cambia la especialidad (usa tu endpoint AJAX)
+  const $esp = document.getElementById("f_especialidad");
+  const $med = document.getElementById("f_medico");
+
+  $esp.addEventListener("change", () => {
+    const val = $esp.value;
+    $med.innerHTML = '<option value="">Todos</option>';
+    if (!val) return;
+    fetch("{% url 'agenda:ajax_medicos' %}?especialidad=" + val)
+      .then(r => r.json())
+      .then(data => {
+        for (const it of data.items) {
+          const opt = document.createElement("option");
+          opt.value = it.id;
+          opt.textContent = it.nombre;
+          $med.appendChild(opt);
+        }
+      });
+  });
+</script>
+{% endblock %}

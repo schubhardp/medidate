@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Sobre MediDate{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="bg-white rounded-3 p-4 p-md-5 shadow-sm mb-4">
+    <h1 class="h4 mb-2">Sobre MediDate</h1>
+    <p class="text-muted mb-0">Una forma simple y moderna de agendar citas médicas.</p>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="bg-white rounded-3 p-4 shadow-sm h-100">
+        <h2 class="h5">Misión</h2>
+        <p>Facilitar la gestión de citas entre pacientes y consultorios con una experiencia clara y rápida.</p>
+
+        <h2 class="h5 mt-3">Cómo funciona</h2>
+        <ol class="mb-0">
+          <li>Elige especialidad y médico.</li>
+          <li>Selecciona fecha y hora disponibles.</li>
+          <li>Gestiona y cancela desde tu perfil.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="bg-white rounded-3 p-4 shadow-sm h-100">
+        <h2 class="h5">Privacidad & Seguridad</h2>
+        <ul class="mb-3">
+          <li>Solo guardamos lo necesario para agendar.</li>
+          <li>Acceso protegido con usuario y contraseña.</li>
+          <li>Cancelación simple desde el perfil.</li>
+        </ul>
+
+        <h2 class="h5">Nota</h2>
+        <p class="mb-0">
+          Este proyecto es una demostración de portafolio. No ofrece diagnóstico ni sustituye
+          consejo médico profesional.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-3 p-4 shadow-sm mt-3">
+    <h2 class="h5">Contacto</h2>
+    <p class="mb-0">
+      ¿Dudas o comentarios? Escríbenos a
+      <a href="mailto:contacto@medidate.app">contacto@medidate.app</a>.
+    </p>
+  </div>
+</div>
+{% endblock %}

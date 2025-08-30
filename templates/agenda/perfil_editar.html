@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Editar perfil · MediDate{% endblock %}
+
+{% block extra_css %}
+<style>
+  .edit-card{border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 26px rgba(2,6,23,.06)}
+  .edit-card .form-label{font-weight:600;margin-bottom:.35rem}
+  .edit-card .form-control{min-height:44px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--ink)}
+</style>
+{% endblock %}
+
+{% block header %}
+  <h1 class="mb-4">Editar perfil</h1>
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto" style="max-width: 1000px;">
+  <div class="card edit-card">
+    <div class="card-body p-4 p-md-5">
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="row g-4">
+          <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+
+            {# --- Si viene el form, úsalo --- #}
+            {% if uform and uform.first_name %}
+              {% render_field uform.first_name class+="form-control" placeholder="Nombre" autocomplete="given-name" %}
+              {% if uform.first_name.errors %}
+                <div class="text-danger small mt-1">{{ uform.first_name.errors.0 }}</div>
+              {% endif %}
+            {% else %}
+            {# --- Fallback HTML si no vino el form --- #}
+              <input type="text" name="first_name" class="form-control"
+                     placeholder="Nombre" autocomplete="given-name"
+                     value="{{ request.user.first_name|default:'' }}">
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Apellido</label>
+
+            {% if uform and uform.last_name %}
+              {% render_field uform.last_name class+="form-control" placeholder="Apellido" autocomplete="family-name" %}
+              {% if uform.last_name.errors %}
+                <div class="text-danger small mt-1">{{ uform.last_name.errors.0 }}</div>
+              {% endif %}
+            {% else %}
+              <input type="text" name="last_name" class="form-control"
+                     placeholder="Apellido" autocomplete="family-name"
+                     value="{{ request.user.last_name|default:'' }}">
+            {% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Correo electrónico</label>
+
+            {% if uform and uform.email %}
+              {% render_field uform.email class+="form-control" placeholder="correo@ejemplo.com" autocomplete="email" %}
+              {% if uform.email.errors %}
+                <div class="text-danger small mt-1">{{ uform.email.errors.0 }}</div>
+              {% endif %}
+            {% else %}
+              <input type="email" name="email" class="form-control"
+                     placeholder="correo@ejemplo.com" autocomplete="email"
+                     value="{{ request.user.email|default:'' }}">
+            {% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Teléfono</label>
+
+            {% if pform and pform.telefono %}
+              {% render_field pform.telefono class+="form-control" placeholder="+56 9 1234 5678" autocomplete="tel" %}
+              {% if pform.telefono.errors %}
+                <div class="text-danger small mt-1">{{ pform.telefono.errors.0 }}</div>
+              {% endif %}
+            {% else %}
+              <input type="text" name="telefono" class="form-control"
+                     placeholder="+56 9 1234 5678" autocomplete="tel"
+                     value="{{ request.user.paciente.telefono|default:'' }}">
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <a href="{% url 'agenda:perfil' %}" class="btn btn-outline">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

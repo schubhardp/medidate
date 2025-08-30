@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Inicio · MediDate{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% if user.is_authenticated %}
+    <div class="bg-white rounded-3 p-4 p-md-5 shadow-sm mb-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+        <div>
+          <h1 class="h4 mb-1">¡Hola, {{ user.first_name|default:user.email }}!</h1>
+          <p class="text-muted mb-0">Gestiona tus citas de forma rápida y segura.</p>
+        </div>
+        <div class="d-flex gap-2">
+          {% if perms.agenda.access_consultorio %}
+            <a class="btn btn-brand text-white" href="{% url 'agenda:consultorio_citas' %}">Consultorio</a>
+          {% else %}
+            <a class="btn btn-brand text-white" href="{% url 'agenda:agendar_cita' %}">Agendar cita</a>
+            <a class="btn btn-outline-secondary" href="{% url 'agenda:perfil' %}">Ver perfil</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if perms.agenda.access_consultorio %}
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="bg-white rounded-3 p-4 shadow-sm">
+            <div class="small text-muted">Citas hoy</div>
+            <div class="display-6 fw-semibold">{{ kpis_staff.hoy }}</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bg-white rounded-3 p-4 shadow-sm">
+            <div class="small text-muted">Próximos 7 días</div>
+            <div class="display-6 fw-semibold">{{ kpis_staff.semana }}</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="bg-white rounded-3 p-4 shadow-sm">
+            <div class="small text-muted">Canceladas hoy</div>
+            <div class="display-6 fw-semibold">{{ kpis_staff.canceladas_hoy }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3 p-4 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 mb-0">Citas de hoy</h2>
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'agenda:consultorio_citas' %}">Ver todo</a>
+        </div>
+        {% if citas_hoy %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th style="min-width:120px;">Hora</th>
+                  <th>Paciente</th>
+                  <th>Médico</th>
+                  <th>Especialidad</th>
+                  <th class="text-center">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in citas_hoy %}
+                  <tr>
+                    <td>{{ c.hora|time:"H:i" }}</td>
+                    <td>{{ c.paciente.user.get_full_name|default:c.paciente.user.email }}</td>
+                    <td>{{ c.medico.nombre }}</td>
+                    <td>{{ c.medico.especialidad.nombre }}</td>
+                    <td class="text-center">
+                      <span class="badge {{ c.estado_badge_class }}">{{ c.estado_ui|capfirst }}</span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No hay citas programadas para hoy.</p>
+        {% endif %}
+      </div>
+
+    {% else %}
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="bg-white rounded-3 p-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="small text-muted">Próximas citas</div>
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'agenda:perfil' %}">Ver mis citas</a>
+            </div>
+            <div class="display-6 fw-semibold" aria-label="Próximas citas">{{ proximas_count|default:0 }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3 p-4 shadow-sm">
+        <h2 class="h5 mb-3">Tu próxima cita</h2>
+        {% if proxima_cita %}
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+            <div>
+              <div class="fw-semibold">
+                {{ proxima_cita.fecha|date:"l d/m/Y"|capfirst }} · {{ proxima_cita.hora|time:"H:i" }}
+                <span class="badge {{ proxima_cita.estado_badge_class }}">{{ proxima_cita.estado_ui|capfirst }}</span>
+              </div>
+              <div class="text-muted">
+                {{ proxima_cita.medico.nombre }} — {{ proxima_cita.medico.especialidad.nombre }}
+              </div>
+              {% if proxima_cita.motivo %}
+                <div class="small text-muted mt-1">Motivo: {{ proxima_cita.motivo }}</div>
+              {% endif %}
+            </div>
+            <div class="d-flex gap-2">
+              <a class="btn btn-outline-secondary btn-sm" href="{% url 'agenda:perfil' %}">Ver mis citas</a>
+            </div>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">Aún no tienes citas programadas. ¡Agenda tu primera cita!</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="bg-white rounded-3 p-5 shadow-sm text-center mb-4">
+      <h1 class="h3 mb-2">Bienvenido a MediDate</h1>
+      <p class="text-muted mb-4">Agenda y gestiona tus citas médicas en minutos.</p>
+      <div class="d-flex justify-content-center gap-2">
+        <a class="btn btn-brand text-white" href="{% url 'agenda:agendar_cita' %}">Agendar cita</a>
+        <a class="btn btn-outline-secondary" href="{% url 'agenda:registro' %}">Crear cuenta</a>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="bg-white rounded-3 p-4 shadow-sm h-100">
+          <h3 class="h6 mb-1">1. Elige especialidad</h3>
+          <p class="text-muted small mb-0">Selecciona la especialidad y el médico que necesitas.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="bg-white rounded-3 p-4 shadow-sm h-100">
+          <h3 class="h6 mb-1">2. Reserva fecha y hora</h3>
+          <p class="text-muted small mb-0">Confirma tu cita en pocos pasos, sin llamadas.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="bg-white rounded-3 p-4 shadow-sm h-100">
+          <h3 class="h6 mb-1">3. Gestiona tus citas</h3>
+          <p class="text-muted small mb-0">Consulta, reprograma o cancela desde tu perfil.</p>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

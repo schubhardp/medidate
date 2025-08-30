@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}{% load static %}
+{% block title %}MediDate{% endblock %}
+{% block branding %}
+  <h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+      <img src="{% static 'img/logo.png' %}" alt="MediDate" height="40" style="vertical-align:middle;margin-right:6px;">
+      MediDate • Administración
+    </a>
+  </h1>
+{% endblock %}

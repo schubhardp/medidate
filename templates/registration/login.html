@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static widget_tweaks %}
+
+{% block title %}Iniciar sesión – MediDate{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-wrap{min-height:calc(100vh - 72px - 64px)}
+  .auth-card{max-width:420px;margin:auto;border:1px solid rgba(2,6,23,.08);border-radius:18px;box-shadow:0 10px 28px rgba(2,6,23,.08);background:#fff}
+  .auth-title{letter-spacing:-.01em}
+  .input-group-icon{position:relative}
+  .input-group-icon .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b}
+  .input-group-icon .form-control{padding-left:2.4rem;border-radius:12px}
+  .btn-brand{box-shadow:0 4px 12px rgba(0,163,163,.2);transition:all .2s}
+  .btn-brand:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,163,163,.3)}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap d-flex align-items-center py-5">
+  <div class="auth-card p-4 p-lg-5 w-100">
+    <h1 class="h4 mb-1 auth-title">Bienvenido a MediDate</h1>
+    <p class="text-muted mb-4">Inicia sesión para agendar y gestionar tus citas.</p>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger small mb-3">{{ form.non_field_errors|striptags }}</div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3 input-group-icon">
+        <span class="input-icon"><i class="bi bi-envelope"></i></span>
+        {% if form.username %}
+          {% render_field form.username class+="form-control form-control-lg" placeholder="Email" autocomplete="username" %}
+          {% if form.username.errors %}
+            <div class="text-danger small mt-1">{{ form.username.errors|striptags }}</div>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <div class="mb-3 input-group-icon">
+        <span class="input-icon"><i class="bi bi-lock"></i></span>
+        {% if form.password %}
+          {% render_field form.password class+="form-control form-control-lg" placeholder="Contraseña" autocomplete="current-password" %}
+          {% if form.password.errors %}
+            <div class="text-danger small mt-1">{{ form.password.errors|striptags }}</div>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-brand btn-lg w-100 text-white mt-1">Iniciar sesión</button>
+    </form>
+
+    <div class="d-flex justify-content-between align-items-center mt-3 small">
+      <!-- FIX: sin namespace -->
+      <a href="{% url 'password_reset' %}" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
+      <a href="{% url 'agenda:registro' %}" class="text-decoration-none">Crear cuenta</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

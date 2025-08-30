@@ -1,0 +1,13 @@
+<!-- templates/partials/_form_fields.html -->
+{% load widget_tweaks i18n %}
+{% for field in form.visible_fields %}
+  <div class="mb-3">
+    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {% render_field field class+="form-control" %}
+    {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+    {% for error in field.errors %}
+      <div class="invalid-feedback d-block">{{ error }}</div>
+    {% endfor %}
+  </div>
+{% endfor %}
+{% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}

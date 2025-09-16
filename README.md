@@ -82,18 +82,19 @@ Open: http://127.0.0.1:8000/
 
 ---
 
-## 🖼️ Screenshots
+## 🖼️ Screens
 
-### Login  
-![Login Screen](docs/screens/login.png)
+<p>
+  <img src="docs/screens/01_home_logged_out.png" width="800" alt="Home (logged out)" />
+</p>
+<p>
+  <img src="docs/screens/05_patient_dashboard.png" width="800" alt="Patient dashboard" />
+</p>
+<p>
+  <img src="docs/screens/07_staff_dashboard.png" width="800" alt="Staff KPIs" />
+</p>
 
-### Dashboard  
-![Dashboard](docs/screens/dashboard.png)
-
-### Appointment List  
-![Appointments](docs/screens/appointments.png)
-
-*(More previews available in `docs/screens/`)*  
+👉 [View all screenshots here](docs/screens/)
 
 ---
 
@@ -109,7 +110,8 @@ Open: http://127.0.0.1:8000/
 ## 👥 Developed by
 
 **Novaris Data – Consulting · Development · IT Solutions**  
-🌐 [www.novarisdata.com](https://www.novarisdata.com)
+🌐 [www.novarisdata.com](https://www.novarisdata.com)  
+🔗 [Follow us on LinkedIn](https://www.linkedin.com/company/novarisdata/)
 
 ---
 
@@ -140,3 +142,4 @@ Fue desarrollado como parte de los proyectos de **Novaris Data** para demostrar 
 
 Desarrollado por **Novaris Data – Consulting · Development · IT Solutions**  
 🌐 [www.novarisdata.com](https://www.novarisdata.com)
+🔗 [Follow us on LinkedIn](https://www.linkedin.com/company/novarisdata/)

@@ -142,4 +142,4 @@ Fue desarrollado como parte de los proyectos de **Novaris Data** para demostrar 
 
 Desarrollado por **Novaris Data – Consulting · Development · IT Solutions**  
 🌐 [www.novarisdata.com](https://www.novarisdata.com)
-🔗 [Follow us on LinkedIn](https://www.linkedin.com/company/novarisdata/)
+🔗 [Síguenos en LinkedIn](https://www.linkedin.com/company/novarisdata/)
